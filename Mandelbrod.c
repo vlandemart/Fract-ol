@@ -39,7 +39,10 @@ void	mandelbrot_calc(t_fractol *data)
 	int bright = map(data->it, 0, data->it_max, 0, 255);
 	if (data->it == data->it_max)
 		bright = 0;
-	ft_image_put_pixel(data, data->x, data->y, 255 * bright + 255 * bright + 82 * bright);
+	int red = map (bright * bright, 0, 6502, 0, 255);
+	int green = bright / 2;
+	int blue = bright / 4;
+	ft_image_put_pixel(data, data->x, data->y, red * green * blue);
 }
 
 void	*mandelbrot(void *fract)

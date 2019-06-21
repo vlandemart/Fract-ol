@@ -12,7 +12,7 @@
 
 #ifndef FRACTOL_H
 # define FRACTOL_H
-# define THREADS 500
+# define THREADS 1000
 
 # include "libvgx/libvgx.h"
 # include "minilibx/mlx.h"
@@ -32,8 +32,8 @@ typedef struct	s_fractol
 	int			color;
 	int			x;
 	int			y;
-	double		min;
-	double		max;
+	long double	min;
+	long double	max;
 	int			it_max;
 	int			it;
 	long double	factor;

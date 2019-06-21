@@ -14,8 +14,12 @@
 
 int			update(t_fractol *fractol)
 {
+	char *nbr;
+
 	mandelbrot_init(fractol);
-	mlx_string_put(fractol->mlx, fractol->win, 0, 0, 0xffffff, ft_itoa(fractol->it_max));
+	nbr = ft_itoa(fractol->it_max);
+	mlx_string_put(fractol->mlx, fractol->win, 0, 0, 0xffffff, nbr);
+	free(nbr);
 	return (1);
 }
 
@@ -32,9 +36,8 @@ int			handle_input(int key, t_fractol *fractol)
 	if (key == 53)
 		close_window(0);
 	fractol->factor *= 0.9349;
-	fractol->max -= 0.1 * fractol->factor;
-	fractol->min += 0.15 * fractol->factor;
-	fractol->it_max += 20;
+	fractol->max -= 0.1f * fractol->factor;
+	fractol->min += 0.15f * fractol->factor;
 	return (update(fractol));
 }
 
