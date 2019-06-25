@@ -11,34 +11,36 @@
 /* ************************************************************************** */
 
 #include "fractol.h"
+#include <stdio.h>
+
+void		clear_image(t_fractol *data)
+{
+	int i;
+	int j;
+
+	i = 0;
+	while (i < SCREEN_W)
+	{
+		j = 0;
+		while (j < SCREEN_H)
+		{
+			ft_image_put_pixel(data, i, j, 0x000000);
+			j++;
+		}
+		i++;
+	}
+}
 
 int			update(t_fractol *fractol)
 {
 	char *nbr;
 
+	clear_image(fractol);
 	mandelbrot_init(fractol);
 	nbr = ft_itoa(fractol->it_max);
 	mlx_string_put(fractol->mlx, fractol->win, 0, 0, 0xffffff, nbr);
 	free(nbr);
 	return (1);
-}
-
-int			close_window(void *param)
-{
-	(void)param;
-	debug_str("App was closed.\n", 5);
-	exit(0);
-	return (0);
-}
-
-int			handle_input(int key, t_fractol *fractol)
-{
-	if (key == 53)
-		close_window(0);
-	fractol->factor *= 0.9349;
-	fractol->max -= 0.1f * fractol->factor;
-	fractol->min += 0.15f * fractol->factor;
-	return (update(fractol));
 }
 
 int			main(int ac, char **av)
@@ -57,12 +59,13 @@ int			main(int ac, char **av)
 	fractol->img_main = mlx_new_image(fractol->mlx, SCREEN_W, SCREEN_H);
 	fractol->fractal_type = 1;
 	fractol->it_max = 10;
-	fractol->min = -3.0;
-	fractol->max = 1.0;
-	fractol->color = 255;
-	fractol->factor = 1;
+	fractol->min = -2.05f;
+	fractol->max = -1.3f;
+	fractol->zoom = 300;
+	fractol->color = 255 * 255;
 	mlx_hook(fractol->win, 17, 0, close_window, (void *)0);
 	mlx_hook(fractol->win, 2, 0, handle_input, fractol);
+	mlx_mouse_hook(fractol->win, handle_mouse, fractol);
 	mandelbrot_init(fractol);
 	mlx_loop(fractol->mlx);
 	return (1);

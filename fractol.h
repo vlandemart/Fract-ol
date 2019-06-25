@@ -12,7 +12,7 @@
 
 #ifndef FRACTOL_H
 # define FRACTOL_H
-# define THREADS 1000
+# define THREADS 500
 
 # include "libvgx/libvgx.h"
 # include "minilibx/mlx.h"
@@ -36,11 +36,19 @@ typedef struct	s_fractol
 	long double	max;
 	int			it_max;
 	int			it;
-	long double	factor;
+	long double	zoom;
+	long double	c_x;
+	long double	c_y;
+	long double	z_x;
+	long double	z_y;
 	int			y_max;
 }				t_fractol;
 
-void	ft_image_put_pixel(t_fractol *fractol, int x, int y, int color);
-void	mandelbrot_init(t_fractol *data);
+int				update(t_fractol *fractol);
+void			ft_image_put_pixel(t_fractol *fractol, int x, int y, int color);
+void			mandelbrot_init(t_fractol *data);
+int				handle_input(int key, t_fractol *fractol);
+int				handle_mouse(int key, int x, int y, t_fractol *data);
+int				close_window(void *param);
 
 #endif

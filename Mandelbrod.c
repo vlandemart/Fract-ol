@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Mandelbrod.c                                       :+:      :+:    :+:   */
+/*   mandelbrod.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: njacobso <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,37 +12,29 @@
 
 #include "fractol.h"
 
-long double	map(long double x, long double in_min, long double in_max, long double out_min, long double out_max)
-{
-	return ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min);
-}
-
 void	mandelbrot_calc(t_fractol *data)
 {
-	long double a = map(data->x, 0, SCREEN_W, data->min, data->max);
-	long double b = map(data->y, 0, SCREEN_H, data->min, data->max);
-	long double ai = a;
-	long double bi = b;
+	long double tmp;
+	int color;
 
+	data->c_x = data->x / data->zoom + data->max;
+	data->c_y = data->y / data->zoom + data->min;
+	data->z_x = 0;
+	data->z_y = 0;
 	data->it = 0;
-	while (data->it < data->it_max)
+	while (data->z_x * data->z_x + data->z_y * data->z_y < 4 &&
+			data->it < data->it_max)
 	{
-		long double a1 = a * a - b * b;
-		long double b1 = 2 * a * b;
-		a = a1 + ai;
-		b = b1 + bi;
-		if ((a + b) > 2)
-			break ;
+		tmp = data->z_x;
+		data->z_x = data->z_x * data->z_x - data->z_y * data->z_y + data->c_x;
+		data->z_y = 2 * data->z_y * tmp + data->c_y;
 		data->it++;
 	}
-	
-	int bright = map(data->it, 0, data->it_max, 0, 255);
-	if (data->it == data->it_max)
-		bright = 0;
-	int red = map (bright * bright, 0, 6502, 0, 255);
-	int green = bright / 2;
-	int blue = bright / 4;
-	ft_image_put_pixel(data, data->x, data->y, red * green * blue);
+	ft_image_put_pixel(data, data->x, data->y, 0x000000);
+	color = 255 * 255 * data->it / data->it_max;
+	color = color > 0xffffff ? 0xffffff : color;
+	if (data->it != data->it_max)
+		ft_image_put_pixel(data, data->x, data->y, color);
 }
 
 void	*mandelbrot(void *fract)
@@ -89,6 +81,7 @@ void	mandelbrot_init(t_fractol *data)
 	int size;
 	int end;
 
-	data->img_data = (int *)mlx_get_data_addr(data->img_main, &bpp, &size, &end);
+	data->img_data = (int *)mlx_get_data_addr(data->img_main,
+											&bpp, &size, &end);
 	mandelbrot_pthread(data);
 }
