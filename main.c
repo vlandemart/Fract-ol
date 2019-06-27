@@ -63,7 +63,7 @@ int			init_fractal(char *str, t_fractol *data)
 		data->fractal_type = 3;
 	else
 	{
-		ft_putendl("Usage: ./fractol <Mandelbrot/Julia/BurningShip/Tricorn");
+		ft_putendl("Usage: ./fractol <Mandelbrot|Julia|BurningShip|Tricorn>");
 		return (0);
 	}
 	data->it_max = 10;
@@ -80,7 +80,7 @@ int			main(int ac, char **av)
 
 	if (ac != 2)
 	{
-		ft_putendl("Usage: ./fractol <Mandelbrot/Julia/BurningShip/Tricorn>");
+		ft_putendl("Usage: ./fractol <Mandelbrot|Julia|BurningShip|Tricorn>");
 		return (0);
 	}
 	fractol = ft_memalloc(sizeof(t_fractol));
