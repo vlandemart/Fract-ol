@@ -29,6 +29,7 @@ typedef struct	s_fractol
 	void		*img_main;
 	int			*img_data;
 	int			fractal_type;
+	int			mouse_move;
 	int			color;
 	int			x;
 	int			y;
@@ -46,9 +47,15 @@ typedef struct	s_fractol
 
 int				update(t_fractol *fractol);
 void			ft_image_put_pixel(t_fractol *fractol, int x, int y, int color);
-void			mandelbrot_init(t_fractol *data);
+void			fractal_init(t_fractol *data);
 int				handle_input(int key, t_fractol *fractol);
 int				handle_mouse(int key, int x, int y, t_fractol *data);
+int				mouse_movement(int x, int y, t_fractol *data);
 int				close_window(void *param);
+void			fractal_output(t_fractol *data);
+void			mandelbrot_calc(t_fractol *data);
+void			tricorn_calc(t_fractol *data);
+void			burning_calc(t_fractol *data);
+void			julia_calc(t_fractol *data);
 
 #endif

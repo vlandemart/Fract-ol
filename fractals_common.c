@@ -12,32 +12,17 @@
 
 #include "fractol.h"
 
-void	mandelbrot_calc(t_fractol *data)
+void	fractal_output(t_fractol *data)
 {
-	long double tmp;
 	int color;
 
-	data->c_x = data->x / data->zoom + data->max;
-	data->c_y = data->y / data->zoom + data->min;
-	data->z_x = 0;
-	data->z_y = 0;
-	data->it = 0;
-	while (data->z_x * data->z_x + data->z_y * data->z_y < 4 &&
-			data->it < data->it_max)
-	{
-		tmp = data->z_x;
-		data->z_x = data->z_x * data->z_x - data->z_y * data->z_y + data->c_x;
-		data->z_y = 2 * data->z_y * tmp + data->c_y;
-		data->it++;
-	}
 	ft_image_put_pixel(data, data->x, data->y, 0x000000);
-	color = 255 * 255 * data->it / data->it_max;
-	color = color > 0xffffff ? 0xffffff : color;
+	color = data->color * (float)((float)data->it / (float)data->it_max);
 	if (data->it != data->it_max)
 		ft_image_put_pixel(data, data->x, data->y, color);
 }
 
-void	*mandelbrot(void *fract)
+void	*fractal(void *fract)
 {
 	t_fractol *data;
 
@@ -47,7 +32,14 @@ void	*mandelbrot(void *fract)
 		data->x = 0;
 		while (data->x < SCREEN_W)
 		{
-			mandelbrot_calc(data);
+			if (data->fractal_type == 0)
+				mandelbrot_calc(data);
+			else if (data->fractal_type == 1)
+				julia_calc(data);
+			else if (data->fractal_type == 2)
+				burning_calc(data);
+			else if (data->fractal_type == 3)
+				tricorn_calc(data);
 			data->x++;
 		}
 		data->y++;
@@ -55,7 +47,7 @@ void	*mandelbrot(void *fract)
 	return (data);
 }
 
-void	mandelbrot_pthread(t_fractol *data)
+void	fractal_pthread(t_fractol *data)
 {
 	t_fractol	tab[THREADS];
 	pthread_t	t[THREADS];
@@ -67,7 +59,7 @@ void	mandelbrot_pthread(t_fractol *data)
 		ft_memcpy(&tab[i], data, sizeof(t_fractol));
 		tab[i].y = SCREEN_H / THREADS * i;
 		tab[i].y_max = SCREEN_H / THREADS * (i + 1);
-		pthread_create(&t[i], NULL, mandelbrot, &tab[i]);
+		pthread_create(&t[i], NULL, fractal, &tab[i]);
 		i++;
 	}
 	while (i--)
@@ -75,7 +67,7 @@ void	mandelbrot_pthread(t_fractol *data)
 	mlx_put_image_to_window(data->mlx, data->win, data->img_main, 0, 0);
 }
 
-void	mandelbrot_init(t_fractol *data)
+void	fractal_init(t_fractol *data)
 {
 	int bpp;
 	int size;
@@ -83,5 +75,5 @@ void	mandelbrot_init(t_fractol *data)
 
 	data->img_data = (int *)mlx_get_data_addr(data->img_main,
 											&bpp, &size, &end);
-	mandelbrot_pthread(data);
+	fractal_pthread(data);
 }
