@@ -12,17 +12,23 @@
 
 #include "fractol.h"
 
+int			set_pixel(t_fractol *data, int x, int y, int color)
+{
+	data->pixels[SCREEN_W * y + x] = color;
+	return (1);
+}
+
 void	fractal_output(t_fractol *data)
 {
 	int color;
 
-	ft_image_put_pixel(data, data->x, data->y, 0x000000);
+	set_pixel(data, data->x, data->y, 0x000000);
 	color = data->color * (float)((float)data->it / (float)data->it_max);
 	if (data->it != data->it_max)
-		ft_image_put_pixel(data, data->x, data->y, color);
+		set_pixel(data, data->x, data->y, color);
 }
 
-void	*fractal(void *fract)
+int		fractal(void *fract)
 {
 	t_fractol *data;
 
@@ -44,36 +50,31 @@ void	*fractal(void *fract)
 		}
 		data->y++;
 	}
-	return (data);
+	return (1);
 }
 
-void	fractal_pthread(t_fractol *data)
+void	fractal_threading(t_fractol *data)
 {
 	t_fractol	tab[THREADS];
-	pthread_t	t[THREADS];
+	SDL_Thread	*t[THREADS];
 	int			i;
 
 	i = 0;
 	while (i < THREADS)
 	{
-		ft_memcpy(&tab[i], data, sizeof(t_fractol));
+		memcpy(&tab[i], data, sizeof(t_fractol));
 		tab[i].y = SCREEN_H / THREADS * i;
 		tab[i].y_max = SCREEN_H / THREADS * (i + 1);
-		pthread_create(&t[i], NULL, fractal, &tab[i]);
+		t[i] = SDL_CreateThread(fractal, "thread", &tab[i]);
+		//pthread_create(&t[i], NULL, fractal, &tab[i]);
 		i++;
 	}
 	while (i--)
-		pthread_join(t[i], NULL);
-	mlx_put_image_to_window(data->mlx, data->win, data->img_main, 0, 0);
+		SDL_WaitThread(t[i], NULL);
+	//pthread_join(t[i], NULL);
 }
 
 void	fractal_init(t_fractol *data)
 {
-	int bpp;
-	int size;
-	int end;
-
-	data->img_data = (int *)mlx_get_data_addr(data->img_main,
-											&bpp, &size, &end);
-	fractal_pthread(data);
+	fractal_threading(data);
 }

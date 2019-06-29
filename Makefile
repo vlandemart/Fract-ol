@@ -10,19 +10,16 @@
 #                                                                              #
 #******************************************************************************#
 
-NAME		= fdf
+NAME		= fractal
 CFLAGS		= -o1 -o2 -o3 -Wall -Werror -Wextra
 FILES		= *.c
-LIBMLX		= ./minilibx -lmlx
-LIBVGX		= ./libvgx -lvgx
-LIBFT		= ./libft -lft
 INCLUDES	= /usr/local/include
-FRAMEWORKS	= -framework OpenGL -framework AppKit
+LIBSLD		= -lSDL2 -lSDL2main
 
 all: $(NAME)
 
 $(NAME):
-	gcc $(CFLAGS) -I $(INCLUDES) $(FILES) -L $(LIBMLX) -L $(LIBVGX) -L $(LIBFT) $(FRAMEWORKS) -o $(NAME)
+	gcc $(CFLAGS) $(FILES) $(LIBSLD) -o $(NAME)
 
 clean:
 	rm -rf $(NAME)
@@ -30,13 +27,9 @@ clean:
 
 fclean: clean
 
-re: fclean rebuild_libvgx all
+re: fclean all
 
-rebuild: fclean rebuild_libft rebuild_libvgx all
-
-rebuild_libvgx:
-	make re -C libvgx
-	make clean -C libvgx
+rebuild: fclean rebuild_libft all
 
 rebuild_libft:
 	make re -C libft
